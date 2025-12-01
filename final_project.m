@@ -6,7 +6,7 @@ clear;
 bananaImage = imread("./images/bruised4.jpg");
 % Display
 figure();
-imshow(bananaImage), title('Bruised Banana Image jpg');
+imshow(bananaImage), title('Good Banana Image jpg');
 
 % Get the banana mask from Thresholder App
 [BW_banana, maskedRGB] = createMask(bananaImage);
