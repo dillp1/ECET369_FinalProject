@@ -104,7 +104,7 @@ yellowHigh = 0.18;
 goodYellow = (H >= yellowLow) & (H <= yellowHigh) & (S > 0.4) & (V > 0.5);
 
 % Create a bruise mask out of non-good pixels
-bruiseMask = croppedMask & not(goodYellow);
+bruiseMask = croppedMask & (V < darkThresh) & (S > satMin) & ~goodYellow;
 
 % Display
 %figure;
