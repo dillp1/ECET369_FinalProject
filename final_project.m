@@ -107,6 +107,9 @@ end
 % 1 = bruised
 yTrain = [zeros(numel(goodTrainFiles), 1); ones(numel(badTrainFiles), 1)];
 
+% Label test set
+yTest = [zeros(numel(goodTestFiles), 1); ones(numel(badTestFiles), 1)];
+
 % Declare number of nearest neighbors
 k = 3;
 
@@ -131,6 +134,28 @@ for i = 1:nTest
     fprintf('%s \t-> predicted: %s | neighbor labels = %s\n', ... 
         testFiles{i}, decisionStr(i), mat2str(neighborLabels(i,:)));
 end
+
+fprintf('\nTraining');
+% Print training accuracy
+printAccuracy(yPred, yTest, nTest)
+
+% Compute training accuracy
+% Find k + 1 neighbors (first neighbor will be itself)
+IdxTrain = knnsearch(X, X, 'K', k + 1);
+
+% Drop the first neighbor (itself)
+IdxTrain = IdxTrain(:, 2:end);
+
+% Get labels of KNN results
+neighborLabelsTrain = yTrain(IdxTrain);
+
+% Find the majority of labels
+yPredTrain = mode(neighborLabelsTrain, 2);
+
+fprintf('\nTesting');
+% Print training accuracy
+printAccuracy(yPredTrain, yTrain, nTrain)
+
 
 % === FUNCTIONS ===
 
@@ -271,5 +296,14 @@ function [good_pxls, bad_pxls] = getPixels(goodMask, bruiseMask)
 % Find the counts of yellow pixels and bruise pixels
 good_pxls = nnz(goodMask);
 bad_pxls = nnz(bruiseMask);
+
+end
+
+function printAccuracy(yPred, yTest, nTest)
+
+% Compute accuracies
+numCorrectTest = sum(yPred == yTest);
+testAccuracy = numCorrectTest / nTest * 100;
+fprintf('\nAccuracy: %d / %d = %.2f%%%\n', numCorrectTest, nTest, testAccuracy);
 
 end
